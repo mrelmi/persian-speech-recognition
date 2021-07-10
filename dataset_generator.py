@@ -21,8 +21,8 @@ def milisecond(time):
     return int(time)
 
 
-def times_and_texts(address='text.srt'):
-    file = open(address, "r")
+def times_and_texts(address='text.srt', delay=0):
+    file = open(address, "r", encoding='UTF8', errors='ignore')
     lines = file.readlines()
     file.close()
     times = []
@@ -32,15 +32,16 @@ def times_and_texts(address='text.srt'):
         if '-->' in lines[i]:
             line = lines[i]
             t1, t2 = line.split(" --> ")
-            t1 = milisecond(t1)
-            t2 = milisecond(t2)
+            t1 = milisecond(t1) + delay
+            t2 = milisecond(t2) + delay
             times.append((t1, t2))
             texts.append(lines[i + 1:i + 3])
     return times, texts
 
 
-def split_and_write_files(audio_file='audio.wav', subtitle_file='text.srt', write_on_csv=True, folder='/dataset'):
-    times, texts = times_and_texts(subtitle_file)
+def split_and_write_files(audio_file='audio.wav', subtitle_file='text.srt', write_on_csv=True, folder='/dataset',
+                          delay=0):
+    times, texts = times_and_texts(subtitle_file, delay)
     if write_on_csv:
         header = ['file', 'time', 'text']
         with open(folder + '/' + 'dataset.csv', 'w', encoding='UTF8', newline='') as f:
@@ -58,4 +59,5 @@ def split_and_write_files(audio_file='audio.wav', subtitle_file='text.srt', writ
                 f.write(texts[i][0] + texts[i][1])
 
 
-split_and_write_files(audio_file='audio.wav', subtitle_file='text.srt', write_on_csv=True, folder='dataset')
+split_and_write_files(audio_file='audio.wav', subtitle_file='text.srt', write_on_csv=True, folder='dataset',
+                      delay=24000)
